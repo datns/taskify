@@ -1,12 +1,22 @@
-import {OrganizationSwitcher} from "@clerk/nextjs";
+import {db} from "@/lib/db";
+import {
+	Board
+} from "@/app/(platform)/(dashboard)/organization/[organizationId]/board";
+import {
+	Form
+} from "@/app/(platform)/(dashboard)/organization/[organizationId]/form";
 
-const OrganizationIdPage = () => {
+const OrganizationIdPage = async () => {
+	const boards = await db.board.findMany();
+
 	return (
-		<div>
-			Organization Page
-			{/*<OrganizationSwitcher*/}
-			{/*	hidePersonal*/}
-			{/*/>*/}
+		<div className="flex flex-col">
+			<Form />
+			<div className="space-y-2">
+				{boards.map(board => (
+					<Board title={board.title} id={board.id} key={board.id} />
+				))}
+			</div>
 		</div>
 	)
 }
