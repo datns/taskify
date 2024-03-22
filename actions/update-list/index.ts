@@ -4,8 +4,7 @@ import {auth} from "@clerk/nextjs";
 import {db} from "@/lib/db";
 import {revalidatePath} from "next/cache";
 import {createSafeAction} from "@/lib/create-safe-action";
-import {DeleteBoard} from "./schema";
-import {redirect} from "next/navigation";
+import {UpdateList} from "./schema";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
 	const {userId, orgId} = auth();
@@ -16,24 +15,30 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 		}
 	}
 
-	const { id } = data;
-	let board;
+	const { title, id, boardId } = data;
+	let list;
 
 	try {
-		board = await db.board.delete({
+		list = await db.list.update({
 			where: {
 				id,
-				orgId,
+				boardId,
+				board: {
+					orgId,
+				}
 			},
+			data: {
+				title,
+			}
 		})
 	} catch (err) {
 		return {
-			error: "Failed to delete."
+			error: "Failed to update."
 		}
 	}
 
-	revalidatePath(`/organization/${orgId}`)
-	redirect(`/organization/${orgId}`)
+	revalidatePath(`/board/${boardId}`)
+	return {data: list}
 }
 
-export const deleteBoard = createSafeAction(DeleteBoard, handler);
+export const updateList = createSafeAction(UpdateList, handler);
