@@ -50,6 +50,10 @@ export const Description = ({ data }: DescriptionProps) => {
       queryClient.invalidateQueries({
         queryKey: ["card", data.id],
       });
+
+      queryClient.invalidateQueries({
+        queryKey: ["card-logs", data.id],
+      });
       toast.success(`Card "${data.title}" updated`);
       disableEditing();
     },
@@ -77,6 +81,7 @@ export const Description = ({ data }: DescriptionProps) => {
         {isEditing ? (
           <form ref={formRef} className="space-y-2" action={onSubmit}>
             <FormTextArea
+              errors={fieldErrors}
               id="description"
               className="w-full mt-2"
               placeholder="Add a more detailed description"
